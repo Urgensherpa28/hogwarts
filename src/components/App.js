@@ -1,32 +1,51 @@
-import React, { Component } from "react";
+import React from "react";
 import "../App.css";
 import Nav from "./Nav";
 import hogs from "../porkers_data";
 import HogContainer from "./HogContainer";
-import GreasedFilterButton from "./GreasedFilterButton"
+import ChangePigs from "./ChangePigs"
 
-class App extends Component {
+class App extends React.Component {
   state = {
-    hogsList: []
+    hogsList: [],
+    howToRenderPigs: 'Alplhabetical'
   }
 
+  changeHowToRenderPigs = (termFromTheChild) => {
+    this.setState({
+      howToRenderPigs: termFromTheChild
+    })
+  }
+
+  decideWhichPigsToSendDown = () => {
+    let theArrayToDisplay = this.state.hogsList
+    if (this.state.howToRenderPigs === 'Alphabetical') {
+      theArrayToDisplay = [...this.state.hogsList].sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      })
+    }
+    if (this.state.howToRenderPigs === 'Greased') {
+      theArrayToDisplay = this.state.hogsList.filter((pig) => {
+        return pig.greased
+      })
+    }
+    if (this.state.howToRenderPigs === 'Non-Greased') {
+      theArrayToDisplay = this.state.hogsList.filter((pig) => {
+        return !pig.greased
+      })
+    }
+    if (this.state.howToRenderPigs === 'Weight') {
+      theArrayToDisplay = [...this.state.hogsList].sort((a, b) => {
+        return a.weight - b.weight
+      })
+    }
+    return theArrayToDisplay
+  }
+  
   componentDidMount() {
+    //use fetch if data is coming from backend 
     this.setState({
       hogsList: hogs 
-    })
-    // console.log(this.state.hogsList)
-  }
-
-  greasedFilter = () => {
-    //this returns an array 5 greased hogs 
-    let originalArray = this.state.hogsList
-    let filteredArray = originalArray.filter(hog => {
-      return hog.greased === true
-    })
-    console.log(filteredArray)
-    // set state hogsList to the above array
-    this.setState ({
-      hogsList: filteredArray
     })
   }
 
@@ -35,12 +54,13 @@ class App extends Component {
     return (
       <div className="App">
         <Nav />
-        <GreasedFilterButton 
-        filterFunction = {this.greasedFilter}
+        <ChangePigs 
+          changeHowToRenderPigs={this.changeHowToRenderPigs}
+          howToRenderPigs={this.state.howToRenderPigs}
         />
-        <HogContainer hogsList={this.state.hogsList}/>
+        <HogContainer hogsList={this.decideWhichPigsToSendDown()}/>
       </div>
-    );
+    )
   }
 }
 

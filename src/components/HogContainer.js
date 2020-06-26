@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HogTile from './HogTile'
 
 
-const HogContainer = (props) => {
-    let arrayOfHogs = props.hogsList.map(hog => <HogTile key={hog.id} hogItem={hog} />)
-
+let HogContainer = (props) => {
+    let arrayOfHogs = props.hogsList.map((hog) => {
+        return <HogTile key={hog.name} hog={hog} />
+    })
     return ( 
         <div>
             {arrayOfHogs}
